@@ -33,8 +33,9 @@
       ></v-text-field>
     </v-card-title>
     <v-data-table
+      :loading="loading"
       :headers="headers"
-      :items="desserts"
+      :items="horarios"
       :search="search"
     ></v-data-table>
   </v-card>
@@ -46,77 +47,43 @@
 import Busca from './components/Busca';
 
 export default {
-  cep: 'App',
+  name: 'App',
 
   components: {
     Busca,
   },
 
   data: () => ({
-     search: '',
-        headers: [
-          {
-            text: 'CEP',
-            align: 'start',
-            sortable: false,
-            value: 'cep',
-          },
-          { text: 'Dia da Semana', value: 'dia' },
-          { text: 'Endereço', value: 'endereco' },
-          { text: 'Horário', value: 'horario' },
-        ],
-        desserts: [
-          {
-            cep: '16250000',
-            dia: "Segunda-Feira",
-            endereco: "Luzia Figueiredo Rizzato",
-            horario: "10:00",
-          },
-          {
-            cep: '16250000',
-            dia: "Terça-Feira",
-            endereco: "Luzia Figueiredo Rizzato",
-            horario: "10:00",
-          },
-          {
-            cep: '16250000',
-            dia: "Quarta-Feira",
-            endereco: "Luzia Figueiredo Rizzato",
-            horario: "10:00",
-          },
-          {
-            cep: '16250000',
-            dia: "Quinta-Feira",
-            endereco: "Luzia Figueiredo Rizzato",
-            horario: "10:00",
-          },
-          {
-            cep: '16250000',
-            dia: "Sexta-Feira",
-            endereco: "Luzia Figueiredo Rizzato",
-            horario: "10:00",
-          },
-          {
-            cep: '16250000',
-            dia: "Sábado",
-            endereco: "Luzia Figueiredo Rizzato",
-            horario: "10:00",
-          },
-          {
-            cep: '16250000',
-            dia: "Domingo",
-            endereco: "Luzia Figueiredo Rizzato",
-            horario: "10:00",
-          },
-        ],
+    cep: null,
+    loading: false,
+    search: '',
+    headers: [
+      {
+        text: 'CEP',
+        align: 'start',
+        sortable: false,
+        value: 'cep',
+      },
+      { text: 'Dia da Semana', value: 'dia' },
+      { text: 'Endereço', value: 'endereco' },
+      { text: 'Horário', value: 'horario' },
+    ],
+    horarios: [],
   }),
   methods: {
     openRegisterModal(){
       console.log("hello world")
     },
-    buscarDados(value){
-      alert("buscando cep: " + value)
+    async buscarDados(value){
+      this.loading = true
+      this.horarios = []
+      await this.$http.get(`http://localhost:5000/horarios?cep=${value}`).then((result)=>{
+        if(result && result.status == 200){
+          this.horarios = result.data
+        }
+      })
+      this.loading = false
     }
-  }
+  },
 };
 </script>
